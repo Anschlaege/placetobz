@@ -9,22 +9,23 @@ st.set_page_config(page_title="Venosta Agro-Ecological Sentinel", layout="wide")
 st.title("🍏 Venosta Valley: Agro-Ecological Explorer")
 st.sidebar.header("Control Panel")
 
-# 2. User Persona Selector
-user_mode = st.sidebar.radio("Select View Mode:",)
+# 2. User Persona Selector - FIXED: Added the required options list
+user_mode = st.sidebar.radio("Select View Mode:", ["Resident/Tourist", "Policy Maker / Researcher"])
 
-# 3. Data Load (Based on Research Findings)
-# The 13 municipalities of the Venosta district administrative area
+# 3. Data Load
+# FIXED: Added 13 placeholder municipalities and 13 species richness values to match the other columns
 vinschgau_data = pd.DataFrame({
-    'Municipality':,
+    'Municipality': ['Mals', 'Schlanders', 'Latsch', 'Prad', 'Laas', 'Kastelbell', 'Graun', 'Glurns', 'Schluderns', 'Martell', 'Schnals', 'Stilfs', 'Taufers'],
     'Organic_Share': [0.05, 0.15, 0.12, 0.10, 0.05, 0.75, 0.18, 0.40, 0.20, 0.15, 0.05, 0.05, 0.10],
-    'Species_Richness': ,
+    'Species_Richness': [45, 50, 48, 42, 44, 85, 55, 70, 60, 58, 40, 41, 46],
     'Soil_Carbon': [2.1, 5.5, 2.3, 1.9, 2.4, 5.8, 4.2, 5.1, 2.8, 3.8, 5.5, 4.8, 5.2]
 })
 
 # 4. Atmospheric Drift Simulator Logic
 st.sidebar.subheader("Atmospheric Drift Simulator")
 wind_speed = st.sidebar.slider("Valley Wind Intensity (km/h):", 0, 50, 15)
-thermal_updraft = st.sidebar.select_slider("Thermal Condition:", options=)
+# FIXED: Added options for the select slider based on your multiplier logic
+thermal_updraft = st.sidebar.select_slider("Thermal Condition:", options=["Weak", "Moderate", "Strong"])
 
 def predict_peak_contamination(wind, thermal):
     # Research identified 27 substances transported to peaks via thermal updrafts
@@ -36,8 +37,11 @@ def predict_peak_contamination(wind, thermal):
 st.subheader("Geospatial Landscape Analysis")
 m = folium.Map(location=[46.615, 10.705], zoom_start=11, tiles="CartoDB positron")
 
-# Representative coordinates for sensitive sites in Venosta [1, 2]
-sensitive_sites =
+# FIXED: Added representative coordinates for sensitive sites
+sensitive_sites = [
+    (46.632, 10.710, "Local School"), 
+    (46.601, 10.680, "Public Playground")
+]
 
 # Overlay: Buffer Zone Simulation
 if user_mode == "Resident/Tourist":
@@ -52,8 +56,9 @@ else:
         folium.CircleMarker(
             location=[46.62 - (i*0.01), 10.6 + (i*0.02)],
             radius=10,
-            popup=f"{row['Municipality']}: {row*100}% Organic",
-            color='green' if row > 0.3 else 'blue',
+            # FIXED: Specified row['Organic_Share'] instead of just 'row'
+            popup=f"{row['Municipality']}: {row['Organic_Share']*100}% Organic",
+            color='green' if row['Organic_Share'] > 0.3 else 'blue',
             fill=True
         ).add_to(m)
 
